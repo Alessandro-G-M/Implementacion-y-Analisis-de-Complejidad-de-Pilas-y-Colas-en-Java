@@ -1,0 +1,134 @@
+import java.io.*;
+import java.math.*;
+import java.security.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.regex.*;
+import java.util.stream.*;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+
+
+class ArrayStack<T>{
+    private int size;
+    private T[] data;
+
+    public ArrayStack(int capacity){
+        data = (T[]) new Object[capacity];
+        size = 0;
+    }
+
+    private void increaseCapacity() {
+        int newCapacity = data.length * 2;
+        T[] newData = (T[]) new Object[newCapacity];
+        for (int i = 0; i < data.length; i++) {
+            newData[i] = data[i];
+        }
+        data = newData;
+    }
+
+    public void push(T item) {
+        if(data.length == size){
+            increaseCapacity();
+        }
+        data[size] = item;
+        size++;
+    }
+
+
+    public T pop() {
+        if (isEmpty()) {
+            throw new RuntimeException("Underflow: no hay mas elementos en la pila");
+        }
+        T item = data[size-1];
+        size--;
+        return item;
+    }
+
+
+    public T peek() {
+        if (isEmpty()) {
+            throw new RuntimeException("Underflow: no hay mas elementos en la pila");
+        }
+        return data[size-1];
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    public int size() {
+        return size;
+    }
+}
+
+class Result {
+
+
+    public static String isBalanced(String s) {
+        
+        String b = "YES";
+        
+        ArrayStack<Character> stack = new ArrayStack<>(s.length());
+        for (char primero : s.toCharArray()){
+            if (primero == '(' || primero == '{' || primero == '['){
+            stack.push(primero);
+        }
+            else if (primero == ')' || primero == '}' || primero == ']'){
+                if (stack.isEmpty()){
+                    b = "NO";
+                    return b;
+                }
+                char ultAbierto = stack.pop();
+            
+                if (primero == ')' && ultAbierto != '('){
+                    b = "NO";
+                    return b;
+                }
+                if (primero == '}' && ultAbierto != '{'){
+                    b = "NO";
+                    return b;
+                }
+                if (primero == ']' && ultAbierto != '['){
+                    b = "NO";
+                    return b;
+                }          
+            }
+        }
+        if (stack.isEmpty()){
+            return b;
+        } else{ 
+            b = "NO";
+            return b;
+        }
+        
+    }
+
+}
+
+public class Solution {
+    public static void main(String[] args) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        int t = Integer.parseInt(bufferedReader.readLine().trim());
+
+        IntStream.range(0, t).forEach(tItr -> {
+            try {
+                String s = bufferedReader.readLine();
+
+                String result = Result.isBalanced(s);
+
+                bufferedWriter.write(result);
+                bufferedWriter.newLine();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        bufferedReader.close();
+        bufferedWriter.close();
+    }
+}
